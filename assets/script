@@ -1,0 +1,70 @@
+// Accessing HTML elements
+var cityInput = $('#cityInput');
+var searchBtn = $('#searchBtn');
+
+var currentCity = $('#currentCity');
+var temp = $('#tempEl');
+var wind = $('#windEl');
+var hum = $('#humidityEl');
+var uv = $('#uvEL');
+
+var apiKey = 'a60141e249e92ce1d37c9e5687e33813';
+
+var date = moment().format('L');
+var input = '';
+var UVlink;
+
+function currentWeather (){
+    var queryUrl = 'http://api.openweathermap.org/data/2.5/weather?q=' + input + '&units=imperial&appid=' + apiKey;
+
+    fetch(queryUrl)
+   
+        .then(function (response){
+            if (!response.ok){
+                throw response.json();
+                
+            }
+            return response.json();  
+        })
+        .then(function (response){
+            console.log(response);
+            var lat = response.coord.lat;
+            var lon = response.coord.lon;
+            UVlink = 'https://api.openweathermap.org/data/2.5/uvi?lat=' + {lat} + '&lon=' + {lon} + '&appid=' + apiKey;
+            $(currentCity).text(response.name + ' ' + date);
+            $(temp).append('Temp: ' + response.main.temp + ' °F')
+            $(hum).append('Humidity: ' + response.main.humidity + '%')
+            $(wind).append('Breeze: ' + response.wind.speed + 'mph')
+
+        });
+        console.log(input);
+        
+}
+function ultraViolet (){
+
+    fetch(UVlink)
+
+        .then(function (response){
+            if(!response.ok){
+            throw response.json();
+            }
+            return response.json();
+        })
+            .then(function(response){
+                console.log(response)
+            $(uv).append('UV Index: ' + response.val)
+            });
+        
+    
+}
+
+$(searchBtn).on('click', function(){
+    input = $(cityInput).val();
+    currentWeather();
+    ultraViolet();
+    temp.empty();
+    hum.empty();
+    wind.empty();
+})
+
+
